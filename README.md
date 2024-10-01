@@ -1,8 +1,9 @@
 # Projeto-1
 CRIPTO EXCHANGE
-***********************
+Atributos Funcionais
 - Sistema De login 
 - Interface
 - Saldo
-- *****funcionais*****
-- Adicionar Logica de Transacoes
+
+
+-*****Falta Adicionar Logica de Transacoes***
