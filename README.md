@@ -41,7 +41,7 @@ Venda de 0.001 Ethereum
 - **Double-check de senha nas transações**: Atualmente, o sistema exige a senha apenas no login. Futuramente, será implementada uma verificação de senha para cada transação financeira (adicionar, sacar, comprar, vender) para aumentar a segurança.
 
 ## Como Usar:
-1. Compile o código usando um compilador C:
+1. Compile o código usando um compilador C:(replit)
    ```
    gcc -o criptomoedas criptomoedas.c
    ```
