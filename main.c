@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+//mudar
 #define MAX_USERS 100
 #define MAX_TRANS 50
 
