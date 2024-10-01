@@ -37,16 +37,8 @@ Compra de 0.0001 Bitcoin
 Venda de 0.001 Ethereum
 ```
 
-## Melhorias Futuras:
-- **Double-check de senha nas transações**: Atualmente, o sistema exige a senha apenas no login. Futuramente, será implementada uma verificação de senha para cada transação financeira (adicionar, sacar, comprar, vender) para aumentar a segurança.
 
 ## Como Usar:
-1. Compile o código usando um compilador C:(replit)
-   ```
-   gcc -o criptomoedas criptomoedas.c
-   ```
-2. Execute o programa:
-   ```
-   ./criptomoedas
+*******######MUDAR####*************
    ```
 3. O programa solicitará o CPF e senha. Se o login for bem-sucedido, será exibido o saldo e o histórico de transações. A seguir, o usuário poderá realizar operações de adicionar, sacar, comprar e vender criptomoedas.
