@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//mudar
+
 #define MAX_USERS 100
 #define MAX_TRANS 50
 
@@ -111,110 +111,147 @@ void adicionarFundos(Usuario *usuario, float valor) {
     printf("%s\n", descricao);
 }
 
+// Função para solicitar senha
+int solicitarSenha(char *senhaCorreta) {
+    char senha[20];
+    printf("Digite sua senha novamente: ");
+    scanf("%s", senha);
+    return strcmp(senha, senhaCorreta) == 0;
+}
+
 // Função para sacar fundos
-void sacarFundos(Usuario *usuario, float valor) {
-    if (usuario->saldoRS >= valor) {
-        usuario->saldoRS -= valor;
-        char descricao[100];
-        sprintf(descricao, "Sacado R$%.2f do saldo", valor);
-        adicionarTransacao(usuario, descricao);
-        printf("%s\n", descricao);
+void sacarFundos(Usuario *usuario) {
+    float valor;
+    if (solicitarSenha(usuario->senha)) {
+        printf("Digite o valor para sacar: ");
+        scanf("%f", &valor);
+        if (usuario->saldoRS >= valor) {
+            usuario->saldoRS -= valor;
+            char descricao[100];
+            sprintf(descricao, "Sacado R$%.2f do saldo", valor);
+            adicionarTransacao(usuario, descricao);
+            printf("%s\n", descricao);
+        } else {
+            printf("Saldo insuficiente!\n");
+        }
     } else {
-        printf("Saldo insuficiente!\n");
+        printf("Senha incorreta!\n");
     }
 }
 
 // Função para comprar criptomoedas
-void comprarCriptomoeda(Usuario *usuario, char tipo[], float valor) {
-    float taxa, quantidade;
-    if (strcmp(tipo, "bitcoin") == 0) {
-        taxa = 0.02;
-        quantidade = valor / (1 + taxa); // valor sem a taxa
-        if (usuario->saldoRS >= valor) {
-            usuario->bitcoin += quantidade;
-            usuario->saldoRS -= valor;
-            char descricao[100];
-            sprintf(descricao, "Comprado %.8f Bitcoin", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
+void comprarCriptomoeda(Usuario *usuario) {
+    char tipo[10];
+    float valor;
+    if (solicitarSenha(usuario->senha)) {
+        printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
+        scanf("%s", tipo);
+        printf("Digite o valor a ser investido: ");
+        scanf("%f", &valor);
+
+        float taxa, quantidade;
+        if (strcmp(tipo, "bitcoin") == 0) {
+            taxa = 0.02;
+            quantidade = valor / (1 + taxa); // valor sem a taxa
+            if (usuario->saldoRS >= valor) {
+                usuario->bitcoin += quantidade;
+                usuario->saldoRS -= valor;
+                char descricao[100];
+                sprintf(descricao, "Comprado %.8f Bitcoin", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Saldo insuficiente!\n");
+            }
+        } else if (strcmp(tipo, "ethereum") == 0) {
+            taxa = 0.01;
+            quantidade = valor / (1 + taxa);
+            if (usuario->saldoRS >= valor) {
+                usuario->ethereum += quantidade;
+                usuario->saldoRS -= valor;
+                char descricao[100];
+                sprintf(descricao, "Comprado %.8f Ethereum", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Saldo insuficiente!\n");
+            }
+        } else if (strcmp(tipo, "ripple") == 0) {
+            taxa = 0.01;
+            quantidade = valor / (1 + taxa);
+            if (usuario->saldoRS >= valor) {
+                usuario->ripple += quantidade;
+                usuario->saldoRS -= valor;
+                char descricao[100];
+                sprintf(descricao, "Comprado %.8f Ripple", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Saldo insuficiente!\n");
+            }
         } else {
-            printf("Saldo insuficiente!\n");
-        }
-    } else if (strcmp(tipo, "ethereum") == 0) {
-        taxa = 0.01;
-        quantidade = valor / (1 + taxa);
-        if (usuario->saldoRS >= valor) {
-            usuario->ethereum += quantidade;
-            usuario->saldoRS -= valor;
-            char descricao[100];
-            sprintf(descricao, "Comprado %.8f Ethereum", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
-        } else {
-            printf("Saldo insuficiente!\n");
-        }
-    } else if (strcmp(tipo, "ripple") == 0) {
-        taxa = 0.01;
-        quantidade = valor / (1 + taxa);
-        if (usuario->saldoRS >= valor) {
-            usuario->ripple += quantidade;
-            usuario->saldoRS -= valor;
-            char descricao[100];
-            sprintf(descricao, "Comprado %.8f Ripple", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
-        } else {
-            printf("Saldo insuficiente!\n");
+            printf("Tipo de criptomoeda inválido!\n");
         }
     } else {
-        printf("Tipo de criptomoeda inválido!\n");
+        printf("Senha incorreta!\n");
     }
 }
 
 // Função para vender criptomoedas
-void venderCriptomoeda(Usuario *usuario, char tipo[], float quantidade) {
-    float valor, taxa;
-    if (strcmp(tipo, "bitcoin") == 0) {
-        taxa = 0.03;
-        valor = quantidade * (1 - taxa);
-        if (usuario->bitcoin >= quantidade) {
-            usuario->bitcoin -= quantidade;
-            usuario->saldoRS += valor;
-            char descricao[100];
-            sprintf(descricao, "Vendido %.8f Bitcoin", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
+void venderCriptomoeda(Usuario *usuario) {
+    char tipo[10];
+    float quantidade;
+    if (solicitarSenha(usuario->senha)) {
+        printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
+        scanf("%s", tipo);
+        printf("Digite a quantidade a ser vendida: ");
+        scanf("%f", &quantidade);
+
+        float valor, taxa;
+        if (strcmp(tipo, "bitcoin") == 0) {
+            taxa = 0.03;
+            valor = quantidade * (1 - taxa);
+            if (usuario->bitcoin >= quantidade) {
+                usuario->bitcoin -= quantidade;
+                usuario->saldoRS += valor;
+                char descricao[100];
+                sprintf(descricao, "Vendido %.8f Bitcoin", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Quantidade de Bitcoin insuficiente!\n");
+            }
+        } else if (strcmp(tipo, "ethereum") == 0) {
+            taxa = 0.02;
+            valor = quantidade * (1 - taxa);
+            if (usuario->ethereum >= quantidade) {
+                usuario->ethereum -= quantidade;
+                usuario->saldoRS += valor;
+                char descricao[100];
+                sprintf(descricao, "Vendido %.8f Ethereum", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Quantidade de Ethereum insuficiente!\n");
+            }
+        } else if (strcmp(tipo, "ripple") == 0) {
+            taxa = 0.01;
+            valor = quantidade * (1 - taxa);
+            if (usuario->ripple >= quantidade) {
+                usuario->ripple -= quantidade;
+                usuario->saldoRS += valor;
+                char descricao[100];
+                sprintf(descricao, "Vendido %.8f Ripple", quantidade);
+                adicionarTransacao(usuario, descricao);
+                printf("%s\n", descricao);
+            } else {
+                printf("Quantidade de Ripple insuficiente!\n");
+            }
         } else {
-            printf("Quantidade de Bitcoin insuficiente!\n");
-        }
-    } else if (strcmp(tipo, "ethereum") == 0) {
-        taxa = 0.02;
-        valor = quantidade * (1 - taxa);
-        if (usuario->ethereum >= quantidade) {
-            usuario->ethereum -= quantidade;
-            usuario->saldoRS += valor;
-            char descricao[100];
-            sprintf(descricao, "Vendido %.8f Ethereum", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
-        } else {
-            printf("Quantidade de Ethereum insuficiente!\n");
-        }
-    } else if (strcmp(tipo, "ripple") == 0) {
-        taxa = 0.01;
-        valor = quantidade * (1 - taxa);
-        if (usuario->ripple >= quantidade) {
-            usuario->ripple -= quantidade;
-            usuario->saldoRS += valor;
-            char descricao[100];
-            sprintf(descricao, "Vendido %.8f Ripple", quantidade);
-            adicionarTransacao(usuario, descricao);
-            printf("%s\n", descricao);
-        } else {
-            printf("Quantidade de Ripple insuficiente!\n");
+            printf("Tipo de criptomoeda inválido!\n");
         }
     } else {
-        printf("Tipo de criptomoeda inválido!\n");
+        printf("Senha incorreta!\n");
     }
 }
 
@@ -228,68 +265,51 @@ int main() {
     scanf("%s", senha);
 
     Usuario *usuario = buscarUsuario(cpf, senha);
-
-    if (usuario != NULL) {
-        printf("Login bem-sucedido!\n");
-        exibirUsuario(usuario);
-
-        int opcao;
-        do {
-            printf("\nEscolha uma opção:\n");
-            printf("1. Adicionar fundos\n");
-            printf("2. Sacar fundos\n");
-            printf("3. Comprar criptomoeda\n");
-            printf("4. Vender criptomoeda\n");
-            printf("5. Sair\n");
-            scanf("%d", &opcao);
-
-            switch (opcao) {
-                case 1: {
-                    float valor;
-                    printf("Digite o valor para adicionar: ");
-                    scanf("%f", &valor);
-                    adicionarFundos(usuario, valor);
-                    break;
-                }
-                case 2: {
-                    float valor;
-                    printf("Digite o valor para sacar: ");
-                    scanf("%f", &valor);
-                    sacarFundos(usuario, valor);
-                    break;
-                }
-                case 3: {
-                    char tipo[10];
-                    float valor;
-                    printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
-                    scanf("%s", tipo);
-                    printf("Digite o valor a ser investido: ");
-                    scanf("%f", &valor);
-                    comprarCriptomoeda(usuario, tipo, valor);
-                    break;
-                }
-                case 4: {
-                    char tipo[10];
-                    float quantidade;
-                    printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
-                    scanf("%s", tipo);
-                    printf("Digite a quantidade a ser vendida: ");
-                    scanf("%f", &quantidade);
-                    venderCriptomoeda(usuario, tipo, quantidade);
-                    break;
-                }
-                case 5:
-                    printf("Saindo...\n");
-                    break;
-                default:
-                    printf("Opção inválida!\n");
-            }
-        } while (opcao != 5);
-
-    } else {
+    if (usuario == NULL) {
         printf("CPF ou senha inválidos!\n");
+        return 1;
     }
 
-    salvarDados();
+    int opcao;
+    do {
+        printf("\nEscolha uma opção:\n");
+        printf("1. Exibir saldo e histórico\n");
+        printf("2. Adicionar fundos\n");
+        printf("3. Sacar fundos\n");
+        printf("4. Comprar criptomoeda\n");
+        printf("5. Vender criptomoeda\n");
+        printf("6. Sair\n");
+        printf("Opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                exibirUsuario(usuario);
+                break;
+            case 2: {
+                float valor;
+                printf("Digite o valor a ser adicionado: ");
+                scanf("%f", &valor);
+                adicionarFundos(usuario, valor);
+                break;
+            }
+            case 3:
+                sacarFundos(usuario);
+                break;
+            case 4:
+                comprarCriptomoeda(usuario);
+                break;
+            case 5:
+                venderCriptomoeda(usuario);
+                break;
+            case 6:
+                printf("Saindo...\n");
+                salvarDados();
+                break;
+            default:
+                printf("Opção inválida! Tente novamente.\n");
+        }
+    } while (opcao != 6);
+
     return 0;
 }
