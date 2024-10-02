@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_USERS 100
-#define MAX_TRANS 50
+#define MAX_USERS 10
+#define MAX_TRANS 100
 
 typedef struct {
     char descricao[100];
