@@ -39,6 +39,12 @@ Venda de 0.001 Ethereum
 
 
 ## Como Usar:
-*******######MUDAR####*************
+1. Compile o código usando um compilador C:
    ```
-3. O programa solicitará o CPF e senha. Se o login for bem-sucedido, será exibido o saldo e o histórico de transações. A seguir, o usuário poderá realizar operações de adicionar, sacar, comprar e vender criptomoedas.
+   gcc -o criptomoedas criptomoedas.c
+   ```
+2. Execute o programa:
+   ```
+   ./criptomoedas
+   ```
+3. O programa solicitará o CPF e senha(CPF: 12345678901 ,Senha: senha123, ou se prefir adicione um novo usuario ao arquivo dado_usuarios.txt seguindo a formatacao). Se o login for bem-sucedido, será exibido o saldo e o histórico de transações. A seguir, o usuário poderá realizar operações de adicionar, sacar, comprar e vender criptomoedas.
