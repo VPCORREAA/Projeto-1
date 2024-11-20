@@ -1,50 +1,135 @@
-# Simulação de Venda de Criptomoedas
+---
 
-Este projeto em C simula um sistema básico de gerenciamento de vendas e compras de criptomoedas, além de permitir operações de adicionar e sacar fundos. O sistema realiza as seguintes operações:
+## 📋 **Projeto 3: CRIPTO.PT2**
 
-## Funcionalidades Implementadas:
-- **Cadastro e Autenticação**: O usuário se autentica por meio de CPF e senha.
-- **Saldo e Histórico**: O saldo em reais e em criptomoedas é exibido, assim como o histórico de transações.
-- **Transações**:
-  - **Adicionar fundos**: Adiciona valor ao saldo do usuário.
-  - **Sacar fundos**: Permite sacar um valor do saldo do usuário, se houver saldo suficiente.
-  - **Comprar criptomoedas**: Permite comprar Bitcoin, Ethereum ou Ripple, descontando uma taxa específica:
-    - Bitcoin: 2% de taxa sobre o valor investido.
-    - Ethereum: 1% de taxa sobre o valor investido.
-    - Ripple: 1% de taxa sobre o valor investido.
-  - **Vender criptomoedas**: Permite vender Bitcoin, Ethereum ou Ripple, descontando uma taxa específica:
-    - Bitcoin: 3% de taxa sobre o valor vendido.
-    - Ethereum: 2% de taxa sobre o valor vendido.
-    - Ripple: 1% de taxa sobre o valor vendido.
-- **Histórico de Transações**: Cada operação realizada é registrada no histórico do usuário, permitindo rastrear todas as movimentações.
+O projeto **`ADM.C`** é um sistema básico de gerenciamento de investidores e criptomoedas desenvolvido em **C**. Ele permite o cadastro e controle de investidores, gerenciamento de criptomoedas, exclusão de registros, e persistência de dados em arquivos. O sistema inclui funcionalidades de login para administradores e um menu interativo para realizar as operações.
 
-## Dependências
-Nenhuma dependência externa. O código foi implementado em C puro.
+---
 
-## Estrutura do Arquivo `dados_usuarios.txt`:
-O arquivo `dados_usuarios.txt` armazena as informações dos usuários, incluindo:
-- CPF e senha.
-- Saldo em reais (R$).
-- Quantidade de Bitcoin, Ethereum e Ripple.
-- Histórico de transações.
+## ⚙️ **Funcionalidades**
 
-Cada linha representa um usuário, seguido por suas transações.
+1. **Gestão de Investidores**:
+   - Cadastro de novos investidores (CPF, senha e saldo inicial).
+   - Exclusão de investidores existentes.
+   - Listagem de todos os investidores, incluindo histórico de transações.
 
-### Exemplo de estrutura:
-```
-12345678901 senha123 5000.00 0.00050000 0.01000000 0.20000000 2
-Compra de 0.0001 Bitcoin
-Venda de 0.001 Ethereum
-```
+2. **Gestão de Criptomoedas**:
+   - Cadastro de novas criptomoedas com taxas associadas.
+   - Exclusão de criptomoedas existentes.
+   - Listagem de criptomoedas cadastradas.
 
+3. **Persistência de Dados**:
+   - Dados de investidores armazenados em `dados_usuarios.txt`.
+   - Dados de criptomoedas armazenados em `taxas.txt`.
 
-## Como Usar:
-1. Compile o código usando um compilador C:
+4. **Autenticação**:
+   - Login de administradores via `admins.txt`.
+
+---
+
+## 🗂️ **Arquivos do Projeto**
+
+- **`ADM.C`**: Código-fonte principal do sistema.
+- **`dados_usuarios.txt`**: Armazena os dados dos investidores cadastrados.
+- **`taxas.txt`**: Armazena as taxas e nomes das criptomoedas cadastradas.
+- **`admins.txt`**: Contém os logins e senhas dos administradores.
+
+---
+
+## 🛠️ **Como Executar**
+
+1. **Pré-requisitos**:
+   - Compilador GCC ou compatível.
+   - Sistema operacional compatível com o padrão POSIX ou Windows.
+
+2. **Compilação**:
+   Use o comando abaixo para compilar o programa:
+   ```bash
+   gcc ADM.C -o adm
    ```
-   gcc -o criptomoedas criptomoedas.c
+
+3. **Execução**:
+   Após compilar, execute o programa com:
+   ```bash
+   ./adm
    ```
-2. Execute o programa:
-   ```
-   ./criptomoedas
-   ```
-3. O programa solicitará o CPF e senha ***(CPF: 12345678901  Senha: senha123)***, ou se prefir adicione um novo usuario ao arquivo dados_usuarios.txt seguindo a formatacao). Se o login for bem-sucedido, será exibido o saldo e o histórico de transações. A seguir, o usuário poderá realizar operações de adicionar, sacar, comprar e vender criptomoedas.
+
+4. **Arquivos Necessários**:
+   Certifique-se de que os arquivos `dados_usuarios.txt`, `taxas.txt`, e `admins.txt` estejam no mesmo diretório que o executável.
+
+---
+
+## 📑 **Estrutura dos Arquivos de Dados**
+
+1. **`dados_usuarios.txt`**:
+   - Formato:
+     ```
+     CPF SENHA SALDO NUMERO_DE_TRANSACOES
+     NOME_CRIPTO SALDO_CRIPTO
+     ...
+     HISTORICO_DE_TRANSACOES
+     ```
+   - Exemplo:
+     ```
+     12345678900 12345 5000.00 2
+     Bitcoin 0.00500000
+     Ethereum 1.00000000
+     Adicionado R$100.00 ao saldo
+     Comprado 0.00500000 Bitcoin
+     ```
+
+2. **`taxas.txt`**:
+   - Formato:
+     ```
+     NOME_CRIPTO TAXA
+     ```
+   - Exemplo:
+     ```
+     Bitcoin 0.02
+     Ethereum 0.01
+     ```
+
+3. **`admins.txt`**:
+   - Formato:
+     ```
+     CPF:SENHA
+     ```
+   - Exemplo:
+     ```
+     12345678900:admin123
+     ```
+
+---
+
+## 🚀 **Funcionalidades do Menu**
+
+- **Opções disponíveis**:
+  ```
+  Menu:
+  1. Cadastro de novo investidor
+  2. Excluir investidor
+  3. Exibir lista de investidores
+  4. Cadastrar nova criptomoeda
+  5. Excluir criptomoeda
+  0. Sair
+  ```
+
+- **Navegação**:
+   - Digite o número correspondente à opção desejada.
+   - Informe os dados solicitados durante as operações.
+
+---
+
+## 💾 **Detalhes Técnicos**
+
+- **Persistência de Dados**:
+  - Dados são salvos em arquivos de texto (`txt`) para fácil leitura e manutenção.
+  - As alterações feitas no programa, como cadastro ou exclusão, são imediatamente refletidas nos arquivos correspondentes.
+
+- **Limitações**:
+  - Número máximo de investidores: 100.
+  - Número máximo de criptomoedas: 5.
+  - Número máximo de transações por investidor: 100.
+
+---
+
