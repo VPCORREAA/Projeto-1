@@ -105,35 +105,7 @@ void cadastrarCripto() {
 
     printf("Criptomoeda %s cadastrada com sucesso! Taxa: %.2f\n", nome, taxa);
 }
-// Função para excluir uma criptomoeda
-void excluirCripto() {
-    char nome[20];
-    int encontrado = 0;
 
-    // Solicita o nome da criptomoeda a ser excluída
-    printf("Digite o nome da criptomoeda a ser excluída: ");
-    scanf("%s", nome);
-
-    // Procura a criptomoeda no array taxas1
-    for (int i = 0; i < numTaxas1; i++) {
-        if (strcmp(taxas1[i].nome, nome) == 0) {
-            // Encontrou a criptomoeda, agora remove ela
-            for (int j = i; j < numTaxas1 - 1; j++) {
-                // Move as criptomoedas subsequentes para a posição anterior
-                taxas1[j] = taxas1[j + 1];
-            }
-            numTaxas1--; // Decrementa o contador de criptomoedas
-            encontrado = 1;
-            printf("Criptomoeda %s excluída com sucesso!\n", nome);
-            break;
-        }
-    }
-
-    // Se a criptomoeda não for encontrada
-    if (!encontrado) {
-        printf("Criptomoeda %s não encontrada.\n", nome);
-    }
-}
 
 // Função para exibir as criptomoedas cadastradas
 void exibirCriptos() {
@@ -165,6 +137,38 @@ void salvarCriptos() {
     printf("Criptomoedas salvas com sucesso no arquivo 'criptomoedas.txt'.\n");
 }
 
+// Função para excluir uma criptomoeda
+void excluirCripto() {
+    char nome[20];
+    int encontrado = 0;
+
+    // Solicita o nome da criptomoeda a ser excluída
+    printf("Digite o nome da criptomoeda a ser excluída: ");
+    scanf("%s", nome);
+
+    // Procura a criptomoeda no array `taxas1`
+    for (int i = 0; i < numTaxas1; i++) {
+        if (strcmp(taxas1[i].nome, nome) == 0) {
+            // Encontrou a criptomoeda, agora remove-a
+            for (int j = i; j < numTaxas1 - 1; j++) {
+                // Move as criptomoedas subsequentes para ocupar a posição
+                taxas1[j] = taxas1[j + 1];
+            }
+            numTaxas1--; // Decrementa o contador de criptomoedas
+            encontrado = 1;
+            printf("Criptomoeda '%s' excluída com sucesso!\n", nome);
+            break;
+        }
+    }
+
+    // Caso a criptomoeda não seja encontrada
+    if (!encontrado) {
+        printf("Criptomoeda '%s' não encontrada.\n", nome);
+    }
+
+    // Salva as criptomoedas atualizadas no arquivo
+    salvarCriptos();
+}
 
 
 // Função para cadastrar um novo usuário
@@ -227,6 +231,8 @@ void excluirUsuario() {
         printf("Usuário não encontrado.\n");
     }
 }
+
+
 
 // Função para exibir todos os usuários
 void exibirUsuarios() {
@@ -306,7 +312,6 @@ int carregarUsuarios(Usuario usuarios[]) {
     return numUsuarios;
 }
 
-// Função para exibir o menu de opções
 void exibirMenu() {
     int opcao;
 
@@ -316,6 +321,7 @@ void exibirMenu() {
         printf("2. Excluir investidor\n");
         printf("3. Exibir lista de investidores\n");
         printf("4. Cadastrar nova criptomoeda\n");
+        printf("5. Excluir criptomoeda\n");
         printf("0. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
@@ -335,6 +341,7 @@ void exibirMenu() {
                 break;
             case 5:
                 excluirCripto();
+                break;
             case 0:
                 printf("Saindo...\n");
                 salvarCriptos();
