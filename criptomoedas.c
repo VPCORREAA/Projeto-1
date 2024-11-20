@@ -10,18 +10,26 @@ typedef struct {
 } Transacao;
 
 typedef struct {
+    char nome[20];
+    double taxa;
+    double saldo;
+} TaxaCripto;
+
+typedef struct {
     char cpf[12];
     char senha[20];
     float saldoRS;
-    float bitcoin;
-    float ethereum;
-    float ripple;
     Transacao historico[MAX_TRANS];
     int numTransacoes;
+    TaxaCripto saldoCripto[5];  // Array para armazenar saldos das criptos
 } Usuario;
 
+
+
 Usuario usuarios[MAX_USERS];
+TaxaCripto taxas[5];
 int numUsuarios = 0;
+int numTaxas = 0;
 
 // Função para carregar dados dos usuários de um arquivo
 void carregarDados() {
@@ -32,14 +40,26 @@ void carregarDados() {
     }
 
     numUsuarios = 0;
-    while (fscanf(arquivo, "%s %s %f %f %f %f %d", 
+    while (fscanf(arquivo, "%s %s %f %d", 
                   usuarios[numUsuarios].cpf, 
                   usuarios[numUsuarios].senha,
                   &usuarios[numUsuarios].saldoRS,
-                  &usuarios[numUsuarios].bitcoin,
-                  &usuarios[numUsuarios].ethereum,
-                  &usuarios[numUsuarios].ripple,
                   &usuarios[numUsuarios].numTransacoes) != EOF) {
+
+        // Carregar saldos de criptomoedas
+        for (int i = 0; i < numTaxas; i++) {
+            fscanf(arquivo, "%s %lf", taxas[i].nome, &taxas[i].saldo);
+            // Associa o saldo de criptomoeda ao usuário (armazenando no array de taxas de cada usuário)
+            for (int j = 0; j < numTaxas; j++) {
+                if (strcmp(usuarios[numUsuarios].cpf, usuarios[numUsuarios].cpf) == 0) {
+                    // Salva o saldo de cada criptomoeda
+                    strcpy(usuarios[numUsuarios].saldoCripto[i].nome, taxas[i].nome);
+                    usuarios[numUsuarios].saldoCripto[i].saldo = taxas[i].saldo;
+                }
+            }
+        }
+
+        // Agora, ler o histórico de transações do usuário
         for (int i = 0; i < usuarios[numUsuarios].numTransacoes; i++) {
             fscanf(arquivo, " %[^\n]", usuarios[numUsuarios].historico[i].descricao);
         }
@@ -49,34 +69,76 @@ void carregarDados() {
     fclose(arquivo);
 }
 
-// Função para salvar os dados dos usuários em um arquivo
-void salvarDados() {
-    FILE *arquivo = fopen("dados_usuarios.txt", "w");
 
-    for (int i = 0; i < numUsuarios; i++) {
-        fprintf(arquivo, "%s %s %.2f %.8f %.8f %.8f %d\n", 
-                usuarios[i].cpf, 
-                usuarios[i].senha, 
-                usuarios[i].saldoRS, 
-                usuarios[i].bitcoin,
-                usuarios[i].ethereum, 
-                usuarios[i].ripple, 
-                usuarios[i].numTransacoes);
+// Função para carregar as taxas de criptomoedas de um arquivo
+void carregarTaxas() {
+    FILE *arquivo = fopen("taxas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao carregar taxas de criptomoedas.\n");
+        return;
+    }
 
-        for (int j = 0; j < usuarios[i].numTransacoes; j++) {
-            fprintf(arquivo, "%s\n", usuarios[i].historico[j].descricao);
-        }
+    numTaxas = 0;
+    while (fscanf(arquivo, "%s %lf %lf", 
+                  taxas[numTaxas].nome, 
+                  &taxas[numTaxas].taxa, 
+                  &taxas[numTaxas].saldo) != EOF) {
+
+        // Exibe as informações carregadas
+        printf("Nome cripto: %s\n", taxas[numTaxas].nome);
+        printf("Taxa cripto: %lf\n", taxas[numTaxas].taxa);
+        printf("Saldo cripto: %lf\n", taxas[numTaxas].saldo);
+
+        numTaxas++;
     }
 
     fclose(arquivo);
 }
 
+
+// Função para salvar os dados dos usuários em um arquivo
+void salvarDados() {
+    FILE *arquivo = fopen("dados_usuarios.txt", "w");
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para salvar os dados!\n");
+        return;
+    }
+
+    // Para cada usuário, vamos gravar seus dados no arquivo
+    for (int i = 0; i < numUsuarios; i++) {
+        // Primeiro, salva as informações básicas do usuário
+        fprintf(arquivo, "%s %s %.2f %d\n", 
+                usuarios[i].cpf, 
+                usuarios[i].senha, 
+                usuarios[i].saldoRS, 
+                usuarios[i].numTransacoes);
+
+        // Agora, para cada criptomoeda registrada, salva o saldo correspondente
+        for (int j = 0; j < numTaxas; j++) {
+            // Salva o saldo de cada criptomoeda diretamente do array `taxas`
+            fprintf(arquivo, "%s %.8f\n", taxas[j].nome, taxas[j].saldo);
+            printf("%s %.8f\n", taxas[j].nome, taxas[j].saldo);
+        }
+
+        // Salva o histórico de transações
+        for (int j = 0; j < usuarios[i].numTransacoes; j++) {
+            fprintf(arquivo, "%s\n", usuarios[i].historico[j].descricao);
+        }
+    }
+    printf("AAAA");
+    // Fecha o arquivo após salvar
+    fclose(arquivo);
+}
+
+
 // Função para exibir o saldo e histórico do usuário
 void exibirUsuario(Usuario *usuario) {
     printf("Saldo em Reais: R$%.2f\n", usuario->saldoRS);
-    printf("Bitcoin: %.8f\n", usuario->bitcoin);
-    printf("Ethereum: %.8f\n", usuario->ethereum);
-    printf("Ripple: %.8f\n", usuario->ripple);
+    for(int i = 0; i < numTaxas; i++){
+        printf("Saldo em %s: %lf\n", taxas[i].nome, taxas[i].saldo);
+    }
 
     printf("\nHistórico de transações:\n");
     for (int i = 0; i < usuario->numTransacoes; i++) {
@@ -139,124 +201,137 @@ void sacarFundos(Usuario *usuario) {
     }
 }
 
-// Função para comprar criptomoedas
+// Função para comprar criptomoeda
 void comprarCriptomoeda(Usuario *usuario) {
-    char tipo[10];
+    char tipo[20];
     float valor;
+
     if (solicitarSenha(usuario->senha)) {
-        printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
+        for(int i=0; i<numTaxas; i++){
+            printf("Nome cripto: %s\n", taxas[i].nome);
+            printf("Taxa cripto: %lf\n", taxas[i].taxa);
+        }
+        printf("Digite o tipo de criptomoeda: ");
         scanf("%s", tipo);
         printf("Digite o valor a ser investido: ");
         scanf("%f", &valor);
 
-        float taxa, quantidade;
-        if (strcmp(tipo, "bitcoin") == 0) {
-            taxa = 0.02;
-            quantidade = valor / (1 + taxa); // valor sem a taxa
-            if (usuario->saldoRS >= valor) {
-                usuario->bitcoin += quantidade;
-                usuario->saldoRS -= valor;
-                char descricao[100];
-                sprintf(descricao, "Comprado %.8f Bitcoin", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Saldo insuficiente!\n");
+        float taxa = 0;
+        float quantidade = 0;
+        int criptomoedaEncontrada = 0;
+
+        // Buscar a taxa e nome da criptomoeda
+        for (int i = 0; i < numTaxas; i++) {
+            if (strcmp(taxas[i].nome, tipo) == 0) {
+                taxa = taxas[i].taxa;  // Obtém a taxa da criptomoeda cadastrada
+                criptomoedaEncontrada = 1;
+                quantidade = valor / (1 + taxa); // valor sem a taxa
+                break;
             }
-        } else if (strcmp(tipo, "ethereum") == 0) {
-            taxa = 0.01;
-            quantidade = valor / (1 + taxa);
-            if (usuario->saldoRS >= valor) {
-                usuario->ethereum += quantidade;
-                usuario->saldoRS -= valor;
-                char descricao[100];
-                sprintf(descricao, "Comprado %.8f Ethereum", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Saldo insuficiente!\n");
-            }
-        } else if (strcmp(tipo, "ripple") == 0) {
-            taxa = 0.01;
-            quantidade = valor / (1 + taxa);
-            if (usuario->saldoRS >= valor) {
-                usuario->ripple += quantidade;
-                usuario->saldoRS -= valor;
-                char descricao[100];
-                sprintf(descricao, "Comprado %.8f Ripple", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Saldo insuficiente!\n");
-            }
-        } else {
+        }
+
+        // Se a criptomoeda não foi encontrada, retorna erro
+        if (!criptomoedaEncontrada) {
             printf("Tipo de criptomoeda inválido!\n");
+            return;
+        }
+
+        // Verifica se o saldo é suficiente para comprar a criptomoeda
+        if (usuario->saldoRS >= valor) {
+            // Adiciona a quantidade comprada ao saldo da criptomoeda
+            for (int i = 0; i < numTaxas; i++) {
+                if (strcmp(taxas[i].nome, tipo) == 0) {
+                    taxas[i].saldo += quantidade; // Atualiza o saldo da criptomoeda
+                    break;
+                }
+            }
+
+            // Subtrai o valor gasto do saldo do usuário
+            usuario->saldoRS -= valor;
+
+            // Registra a transação
+            char descricao[100];
+            sprintf(descricao, "Comprado %.8f %s", quantidade, tipo);
+            adicionarTransacao(usuario, descricao);
+
+            printf("%s\n", descricao);
+        } else {
+            printf("Saldo insuficiente!\n");
         }
     } else {
         printf("Senha incorreta!\n");
     }
 }
+
 
 // Função para vender criptomoedas
 void venderCriptomoeda(Usuario *usuario) {
-    char tipo[10];
-    float quantidade;
-    if (solicitarSenha(usuario->senha)) {
-        printf("Digite o tipo de criptomoeda (bitcoin, ethereum, ripple): ");
-        scanf("%s", tipo);
-        printf("Digite a quantidade a ser vendida: ");
-        scanf("%f", &quantidade);
+    char tipo[20];
+    float valor;
 
-        float valor, taxa;
-        if (strcmp(tipo, "bitcoin") == 0) {
-            taxa = 0.03;
-            valor = quantidade * (1 - taxa);
-            if (usuario->bitcoin >= quantidade) {
-                usuario->bitcoin -= quantidade;
-                usuario->saldoRS += valor;
-                char descricao[100];
-                sprintf(descricao, "Vendido %.8f Bitcoin", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Quantidade de Bitcoin insuficiente!\n");
+    if (solicitarSenha(usuario->senha)) {
+        for(int i=0; i<numTaxas; i++){
+            printf("Nome cripto: %s\n", taxas[i].nome);
+            printf("Taxa cripto: %lf\n", taxas[i].taxa);
+        }
+        printf("Digite o tipo de criptomoeda: ");
+        scanf("%s", tipo);
+        printf("Digite o valor a ser investido: ");
+        scanf("%f", &valor);
+
+        float taxa = 0;
+        float quantidade = 0;
+        int criptomoedaEncontrada = 0, nrcripto = 100;
+
+        // Buscar a taxa e nome da criptomoeda
+        for (int i = 0; i < numTaxas; i++) {
+            if (strcmp(taxas[i].nome, tipo) == 0) {
+                taxa = taxas[i].taxa;  // Obtém a taxa da criptomoeda cadastrada
+                criptomoedaEncontrada = 1;
+                nrcripto = i;
+                quantidade = valor / (1 - taxa); // valor sem a taxa
+                break;
             }
-        } else if (strcmp(tipo, "ethereum") == 0) {
-            taxa = 0.02;
-            valor = quantidade * (1 - taxa);
-            if (usuario->ethereum >= quantidade) {
-                usuario->ethereum -= quantidade;
-                usuario->saldoRS += valor;
-                char descricao[100];
-                sprintf(descricao, "Vendido %.8f Ethereum", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Quantidade de Ethereum insuficiente!\n");
-            }
-        } else if (strcmp(tipo, "ripple") == 0) {
-            taxa = 0.01;
-            valor = quantidade * (1 - taxa);
-            if (usuario->ripple >= quantidade) {
-                usuario->ripple -= quantidade;
-                usuario->saldoRS += valor;
-                char descricao[100];
-                sprintf(descricao, "Vendido %.8f Ripple", quantidade);
-                adicionarTransacao(usuario, descricao);
-                printf("%s\n", descricao);
-            } else {
-                printf("Quantidade de Ripple insuficiente!\n");
-            }
-        } else {
+        }
+
+        // Se a criptomoeda não foi encontrada, retorna erro
+        if (!criptomoedaEncontrada) {
             printf("Tipo de criptomoeda inválido!\n");
+            return;
+        }
+
+        // Verifica se o saldo é suficiente para comprar a criptomoeda
+        if (taxas[nrcripto].saldo <= valor) {
+            // Adiciona a quantidade comprada ao saldo da criptomoeda
+            for (int i = 0; i < numTaxas; i++) {
+                if (strcmp(taxas[i].nome, tipo) == 0) {
+                    taxas[i].saldo -= quantidade; // Atualiza o saldo da criptomoeda
+                    break;
+                }
+            }
+
+            // Subtrai o valor gasto do saldo do usuário
+            usuario->saldoRS += valor;
+
+            // Registra a transação
+            char descricao[100];
+            sprintf(descricao, "Comprado %.8f %s", quantidade, tipo);
+            adicionarTransacao(usuario, descricao);
+
+            printf("%s\n", descricao);
+        } else {
+            printf("Saldo insuficiente!\n");
         }
     } else {
         printf("Senha incorreta!\n");
     }
 }
 
-int main() {
+
+int aa() {
     char cpf[12], senha[20];
+    carregarTaxas();  // Carregar taxas de criptomoedas
+
     carregarDados();
 
     printf("Digite seu CPF: ");
@@ -313,3 +388,4 @@ int main() {
 
     return 0;
 }
+
